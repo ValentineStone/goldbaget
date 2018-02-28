@@ -1,14 +1,12 @@
 <template>
   <div>
-    <ActionCancelBtn
+    <v-btn
+      block round large
+      color="primary"
       :disabled="!privacyAgreement"
       v-bind="$attrs"
-      @action="$emit('action')"
-      @cancel="$emit('cancel')"
-      :action="action"
+      @click="$emit('action')"
     >
-    </ActionCancelBtn>
-    <v-btn block round large color="primary" v-bind="$attrs" @click="$emit('action')">
       {{action}}
     </v-btn>
     <PrivacyAgreement

@@ -1,29 +1,13 @@
 <template>
-  <v-app dark>
+  <v-app dark style="overflow: hidden;">
 
     <CalculateAndOrderForm :visible.sync="orderFormShown"/>
 
-    <BasicDialog :visible.sync="questionFormShown">
-      <v-form>
-        <v-text-field multi-line label="Ваш вопрос"/>
-        <v-text-field label="Фамилия"/>
-        <v-text-field label="Имя"/>
-        <v-text-field label="Телефон"/>
-        <v-text-field label="Email"/>
-        <ActionCancelBtn
-          :disabled="!privacyAgreement"
-          @cancel="questionFormShown = false"
-          action="Задать вопрос"
-        />
-        <PrivacyAgreement v-model="privacyAgreement"/>
-      </v-form>
-    </BasicDialog>
-
+    <AskQuestionForm :visible.sync="questionFormShown" />
 
     <div v-cover="'/static/img/welcome-underlay.jpg'" style="padding-top: 4rem; padding-bottom: 3rem;">
 
       <header :style="`
-        display: flex;
         padding: .5rem;
         background: rgba(0,0,0, .5);
         position: ${ $vuetify.breakpoint.xs ? 'absolute' : 'fixed' };
@@ -31,26 +15,35 @@
         width: 100%;
         z-index: 2;
       `">
-        <div :style="`
-          flex: 1;
-          font-size: 3rem;
-          font-family: 'Copyright House Industries';
-          line-height: .9;
-          padding-top: .1em;
-          text-align: ${ $vuetify.breakpoint.xs ? 'center' : 'unset' };
-          white-space: nowrap;
-        `">
-          Золотой Квадрат
-        </div>
         <div
           v-if="!$vuetify.breakpoint.xs"
-          style="text-align: right;"
+          style="
+            position: absolute;
+            right: .5em;
+            text-align: right;
+          "
         >
           г. Магнитогорск, ул. Ленинградская 33<br>
-          +7 (3519) 49-58-52
+          +7 (3519) 49-58-52, +7 (906) 851-19-63
         </div>
+        <a
+          :style="`
+            width: 100%;
+            font-size: 3rem;
+            font-family: 'Copyright House Industries';
+            line-height: .9;
+            padding-top: .1em;
+            text-align: ${ $vuetify.breakpoint.xs ? 'center' : 'unset' };
+            white-space: nowrap;
+            color: white;
+            text-decoration: none;
+            display: block;
+          `"
+          href="#contacts"
+        >
+          Золотой Квадрат
+        </a>
       </header>
-
 
 
       <section v-section="1220" style="
@@ -77,30 +70,31 @@
 
 
 
-      <section v-section="960" :style="`
-        display: flex;
-        flex-direction: ${ $vuetify.breakpoint.smAndDown ? 'column-reverse' : 'row' };
-        justify-content: center;
-        align-items: center;
-      `">
+      <section v-section="960" :style="`overflow: hidden;`">
+        <YouTube
+          :style="`
+            display: block;
+            margin: 0 auto;
+            float: ${$vuetify.breakpoint.smAndDown ? 'none' : 'right'};
+          `"
+          v="Wcgx_Ygi4fw"
+          :width="videoHalfWidth"
+        />
         <ul class="tick-list" :style="`
-          flex: 1;
           list-style: none;
           font-size: ${ $vuetify.breakpoint.xs ? '1.5rem' : '1.9rem' };
           font-weight: 100;
           padding: 1rem 1rem 0 2rem;
-          text-shadow: 0 0 .25em black; 
+          text-shadow: 0 0 .25em black;
+          margin: 0 auto;
+          display: ${$vuetify.breakpoint.smAndDown ? 'block' : 'inline-block'};
+          max-width: ${$vuetify.breakpoint.smAndDown ? 'max-content' : '50%'};
         `">
           <li>Бережное обратимое оформление</li>
-          <li>Срок изготовления заказа - 3 дня</li>
+          <li>Срок изготовления заказа - 5 дней</li>
           <li>Гарантия - 12 месяцев</li>
-          <li>Доставка по Росии БЕСПЛАТНО при заказе от 2000 руб.</li>
+          <li>Доставка по России БЕСПЛАТНО при заказе от 2000 руб.</li>
         </ul>
-        <YouTube
-          v="Wcgx_Ygi4fw"
-          :width="$vuetify.breakpoint.smAndDown ? $vuetify.breakpoint.width - 60 : 460"
-          cover="/static/img/video-frame.jpg"
-        />
       </section>
 
       <v-btn
@@ -110,14 +104,15 @@
         style="max-width: 300px; margin: 1rem auto;"
         @click="orderFormShown = true"
       >
-        <div>Заказать Оформление</div>
+        <div>Рассчитать Оформление</div>
       </v-btn>
 
     </div>
     <div v-underlying v-cover="'/static/img/first-background.jpg'">
 
     <section v-section="960">
-      <div style="
+
+      <div id="work-examples" style="
         font-size: 3rem;
         line-height: 1em;
         text-align: center;
@@ -125,22 +120,24 @@
       ">
         Примеры оформления
       </div>
-      <v-tabs fixed-tabs>
-        <v-tab key="0">Эконом</v-tab>
-        <v-tab key="1">Стандарт</v-tab>
-        <v-tab key="2">Премиум</v-tab>
-        <v-tabs-items touchless>
-          <v-tab-item key="0" lazy>
-            <gallery src="/static/img/featured/economy" />
+
+      <v-tabs value="1">
+        <v-tab key="economy">Эконом</v-tab>
+        <v-tab key="standart">Стандарт</v-tab>
+        <v-tab key="premium">Премиум</v-tab>
+        <v-tabs-items touchless style="margin-top: 2rem;">
+          <v-tab-item key="economy">
+            <StaticGallery :model="economyGallery" />
           </v-tab-item>
-          <v-tab-item key="1" lazy>
-            <gallery src="/static/img/featured/standart" />
+          <v-tab-item key="standart">
+            <StaticGallery :model="standartGallery" />
           </v-tab-item>
-          <v-tab-item key="2" lazy>
-            <gallery src="/static/img/featured/premium" />
+          <v-tab-item key="premium">
+            <StaticGallery :model="premiumGallery" />
           </v-tab-item>
         </v-tabs-items>
       </v-tabs>
+
     </section>
 
   </div>
@@ -150,21 +147,13 @@
       <FAQ/>
     </section>
 
-    <section v-section="960" :class="['video-section', $vuetify.breakpoint.xs ? '__xs' : '']" :style="`
-      display: flex;
-      flex-direction: ${ $vuetify.breakpoint.smAndDown ? 'column' : 'row' };
-      justify-content: center;
-      align-items: flex-start;
-      text-align: ${ $vuetify.breakpoint.smAndDown ? 'center' : 'left' };
-    `">
-      <div>
-        <YouTube v="_Zhr0K7M-w0" cover="/static/img/packingBefore.jpg" :width="$vuetify.breakpoint.smAndDown ? $vuetify.breakpoint.width - 60 : 460" />
-        <!--Как мы подбираем оформление вышивки-->
-      </div>
-      <div>
-        <YouTube v="r3FzxgwNUco" cover="/static/img/packingAfter.jpg" :width="$vuetify.breakpoint.smAndDown ? $vuetify.breakpoint.width - 60 : 460" />
-        <!--Как мы упаковываем готовое изделие для отправки-->
-      </div>
+    <!--
+      :class="['video-section', $vuetify.breakpoint.xs ? '__xs' : '']"
+      :style="`text-align: ${ $vuetify.breakpoint.smAndDown ? 'center' : 'left' };`"
+    -->
+    <section v-section="960" class="block-list">
+      <YouTube v="_Zhr0K7M-w0" :width="videoHalfWidth" />
+      <YouTube v="r3FzxgwNUco" :width="videoHalfWidth" />
     </section>
 
     <section v-section="960">
@@ -179,13 +168,56 @@
       </v-btn>
     </section>
 
-    <section v-section="960" ref="mapsSection" style="margin-top: 2rem; position: relative; min-height: 50px;">
-      <div style="width: 100%; position: absolute;">
-          <v-progress-circular indeterminate :size="50" style="display: block; margin: 0 auto;"/>
-      </div>
+    
+    <a
+      id="video"
+      href="https://www.youtube.com/channel/UCPtgmnVt4hFlrGQ7MlJymKw"
+      style="
+        display: block;
+        font-size: 3rem;
+        line-height: 1em;
+        text-align: center;
+        margin: 2rem;
+        margin-top: 5rem;
+        color: white;
+        text-decoration: none;
+      "
+    >
+      Наш канал на <img src="/static/img/yt_logo_rgb_dark.png" style="height: 1em; position: relative; top: 3px;" >
+    </a>
+    
+    <section v-section="960" class="block-list">
+      <YouTube v="7b_gPkNcSJ4" :width="videoHalfWidth" cover="/static/img/featured-video-1-cover.jpg" />
+      <YouTube v="Ve7X5g-p2Aw" :width="videoHalfWidth" />
+      <YouTube v="PHj6zKL_xZA" :width="videoHalfWidth" />
+      <YouTube v="pVTn_UmfB_0" :width="videoHalfWidth" />
     </section>
 
-    <section v-section="960" v-flexbox style="margin: 2rem 0;">
+
+
+    <div id="contacts" style="
+      font-size: 3rem;
+      line-height: 1em;
+      text-align: center;
+      margin: .5rem 2rem 2rem 2rem;
+    ">
+      Наши координаты
+    </div>
+    <div style="
+      font-size: 1.2rem;
+      text-align: center;
+      margin: 2rem;
+    ">
+      455000, Россия, Челябинская обл., г. Магнитогорск, ул. Ленинградская, д. 33<br>
+      для Романовской Юлии Анатольевны<br>
+      magbaget@gmail.com
+    </div>
+    
+    <section v-section="960" ref="mapsSection" style="margin-top: 2rem; position: relative; min-height: 320px;" class="legacy-center-parent">
+      <v-progress-circular indeterminate :size="50"/>
+    </section>
+
+    <section v-section="960" style="margin: 2rem 0; text-align: center;">
       <Social type="vk" href="https://vk.com/create_portrait" />
       <Social type="facebook" href="https://www.facebook.com/createportrait" />
       <Social type="youtube" href="https://www.youtube.com/channel/UCPtgmnVt4hFlrGQ7MlJymKw" />
@@ -196,10 +228,17 @@
 </template>
 
 <script>
+  import economyGallery from '@/galleries/economy'
+  import standartGallery from '@/galleries/standart'
+  import premiumGallery from '@/galleries/premium'
+
   export default {
     data() {
       return {
-        orderFormShown: false,
+        economyGallery,
+        standartGallery,
+        premiumGallery,
+        orderFormShown: location.hash === '#order-calulator',
         questionFormShown: false,
         privacyAgreement: true,
         mapScrolledIntoViewOnce: false,
@@ -208,6 +247,11 @@
     },
     mounted() {
       window.addEventListener('scroll', this.onScrollListenerFunction, { passive: true })
+    },
+    computed: {
+      videoHalfWidth() {
+        return this.$vuetify.breakpoint.smAndDown ? this.$vuetify.breakpoint.width - 60 : 450
+      }
     },
     methods: {
       isInView(el, buffer = 0) {
@@ -275,31 +319,133 @@
     font-size: 1.5rem;
   }
 
-  /*
-      .video-section > div > iframe {
-        margin: 0 auto 0.5em auto;
-        display: block;
-      }
-    */
   .tabs__bar {
     background: transparent !important;
   }
 
-  .overlay:before {
-    background-color: black;
-  }
-
-  .overlay--active:before {
-    opacity: 0.8;
-  }
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
-    /* display: none; <- Crashes Chrome on hover */
     -webkit-appearance: none;
-    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+    margin: 0;
   }
   input[type="number"] {
     -moz-appearance: textfield;
   }
+
+  .legacy-center-parent {
+    position: relative !important;
+  }
+
+  .legacy-center-parent > * {
+    position: absolute !important;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+  }
+
+
+
+  .block-list {
+    text-align: center;
+  }
+
+  .block-list > * {
+    display: inline-block;
+    margin: .5em;
+  }
+
+
+  .__ReCaptcha {
+    margin-left: -.5em;
+  }
+
+  .__ReCaptcha > * {
+    box-sizing: content-box;
+    margin: 18px auto 26px auto;
+    border-style: solid;
+    border-color: transparent;
+    border-width: 2px 1px 1px 2px;
+  }
+
+  .__ReCaptcha.__error > * {
+    border-radius: 3px;
+    border-color: #ff5252;
+    background: #ff5252;
+  }
+
+
+
+
+
+
+
+  .json-tree.json-tree-root {
+    min-width: unset !important;
+  }
+
+
+  /* Vuetify hotfixes */
+
+  .dialog__content__active {
+    background: rgba(0,0,0,0.8);
+  }
+
+  .overlay {
+    width: 100%;
+    height: 100%;
+  }
+
+  .overlay:before {
+    display: none;
+  }
+
+  .overlay.overlay--active {
+    background: none;
+  }
+
+  .expansion-panel.__faq-ul {
+    display: block !important;
+  }
+
+  .expansion-panel__header {
+    display: block !important;
+  }
+
+  .header__icon {
+    display: none !important;
+  }
+
+  .input-group,
+  .input-group__input,
+  .input-group__details {
+    display: block !important;
+  }
+
+  .input-group__input > textarea {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .input-group__input {
+    width: 100% !important;
+  }
+
+  .input-group.input-group--selection-controls.radio.primary--text {
+    display: block !important;
+  }
+
+  .tabs__wrapper,
+  .tabs__container {
+    display: block !important;
+    text-align: center !important;
+  }
+
+  .tabs__div {
+    width: 33% !important;
+    max-width: 160px !important;
+    display: inline-block !important;
+  }
+
 </style>
 

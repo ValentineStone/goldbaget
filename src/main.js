@@ -9,18 +9,20 @@ import App from './App'
 import 'vuetify/src/stylus/app.styl'
 import {
   Vuetify,
-  VApp, 
+  VApp,
   VTabs,
   VExpansionPanel,
   VForm,
   VTextField,
-  VDialog,
   VBtn,
   VIcon,
   VProgressCircular,
+  VDialog,
+  VCheckbox,
 } from 'vuetify'
 import * as VCard from 'vuetify/es5/components/VCard'
 import * as VRadioGroup from 'vuetify/es5/components/VRadioGroup'
+import * as VCarousel from 'vuetify/es5/components/VCarousel'
 Vue.use(Vuetify, {
   components: {
     VApp,
@@ -29,12 +31,14 @@ Vue.use(Vuetify, {
     VExpansionPanel,
     VForm,
     VTextField,
-    VDialog,
     VBtn,
     VIcon,
     VProgressCircular,
+    VDialog,
+    VCheckbox,
     ...VCard,
-    ...VRadioGroup
+    ...VRadioGroup,
+    ...VCarousel
   },
   theme: {
     primary: '#FF5252',
@@ -48,35 +52,19 @@ Vue.use(Vuetify, {
 })
 
 import VJsonTree from 'vue-json-tree'
-Vue.component('v-json-tree', VJsonTree)
+Vue.component('JsonTree', VJsonTree)
 
 import AsyncComputed from 'vue-async-computed'
 Vue.use(AsyncComputed)
 
-import VueImg from 'v-img';
-Vue.use(VueImg);
+import VueImg from 'v-img'
+Vue.use(VueImg)
 
-Vue.directive('flex', function (el, binding) {
-  if (binding.expression) {
-    el.style.flex = binding.value
-    el.style.display = binding.arg
-  }
-  else
-    el.style.display = 'flex'
-})
+import PhotoGrid from 'vue-photo-grid'
+Vue.use(PhotoGrid)
 
-Vue.directive('flexbox', function (el, binding) {
-  if (binding.expression) {
-    el.style.flex = binding.value
-    el.style.display = binding.arg
-  }
-  else {
-    el.style.display = 'flex'
-    el.style.justifyContent = 'center'
-    el.style.alignItems = 'center'
-  }
-})
-
+import ReCaptcha from 'vue-recaptcha'
+Vue.component('ReCaptcha', ReCaptcha)
 
 Vue.directive('section', function (el, binding) {
   el.style.maxWidth = binding.value + 'px'
@@ -110,11 +98,15 @@ import {
   FAQ,
   BasicDialog,
   Gallery,
+  StaticGallery,
   PrivacyAgreement,
   Social,
   VImg,
   YouTube,
-  ActionCancelPrivacyBtn
+  ActionPrivacyBtn,
+  Dialog,
+  StudioPhotos,
+  SubmitNotification
 } from '@/components'
 
 Vue.component('ActionCancelBtn', ActionCancelBtn)
@@ -123,24 +115,36 @@ Vue.component('CalculateAndOrderForm', CalculateAndOrderForm)
 Vue.component('FAQ', FAQ)
 Vue.component('BasicDialog', BasicDialog)
 Vue.component('Gallery', Gallery)
+Vue.component('StaticGallery', StaticGallery)
 Vue.component('PrivacyAgreement', PrivacyAgreement)
 Vue.component('Social', Social)
 Vue.component('VImg', VImg)
 Vue.component('YouTube', YouTube)
-Vue.component('ActionCancelPrivacyBtn', ActionCancelPrivacyBtn)
+Vue.component('ActionPrivacyBtn', ActionPrivacyBtn)
+Vue.component('Dialog', Dialog)
+Vue.component('StudioPhotos', StudioPhotos)
+Vue.component('SubmitNotification', SubmitNotification)
 
 
 
 
 
+import firebase from '@firebase/app'
+import '@firebase/firestore'
+firebase.initializeApp({
+  apiKey: 'AIzaSyAuORq1biG5XXI8u1Hgpnd7C0ewkam9imM',
+  authDomain: 'gold-baget.firebaseapp.com',
+  projectId: 'gold-baget'
+})
+window.firebase = firebase
+window.firestore = firebase.firestore()
 
 Vue.prototype.$console = console
 
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
-if (process.env.NODE_ENV === 'development' || location.search === '?beta')
-  new Vue({
-    el: '#app',
-    render: h => h(App)
-  })
+new Vue({
+  el: '#app',
+  render: h => h(App)
+})

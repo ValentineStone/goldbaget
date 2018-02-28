@@ -11,6 +11,7 @@
       <v-card-text>
         <slot />
         <v-btn
+          :ripple="false"
           color="primary"
           class="elevation-2"
           @click="$emit('update:visible', false)"

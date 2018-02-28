@@ -4,9 +4,13 @@
       Часто Задаваемые Вопросы
     </div>
     <v-expansion-panel class="__faq-ul" expand>
-      <v-expansion-panel-content v-for="(question, i) of questions" :key="i">
-        <div slot="header" class="__faq-question" v-text="question.q"/>
-        <div class="__faq-answer" v-html="question.a"/>
+      <v-expansion-panel-content
+        v-for="(question, i) of questions" :key="i"
+        :value="shouldBeOpen(question.hash)"
+        :id="question.hash.slice(1) || undefined"
+      >
+        <div slot="header" class="__faq-question" v-text="question.question"/>
+        <div class="__faq-answer" v-html="question.answer"/>
       </v-expansion-panel-content>
     </v-expansion-panel>
   </div>
@@ -20,15 +24,34 @@
           return fetch('/static/faq.html')
             .then(v => v.text())
             .then(text => {
-              let questions = text.split('[Question]').slice(1)
+              let questions = text.split('[Question').slice(1)
               questions = questions.map(v => {
                 let pair = v.split('[Answer]')
-                return { q: pair[0].trim(), a: pair[1].trim() }
+                let answer = pair[1].trim()
+                let hashPos = pair[0].indexOf(']')
+                let hash = pair[0].substr(0, hashPos)
+                let question = pair[0].substr(hashPos + 1)
+                return {
+                  question,
+                  answer,
+                  hash
+                }
               })
               return questions
             })
         },
         default: []
+      }
+    },
+    methods: {
+      shouldBeOpen(hash) {
+        if (hash && location.hash === hash) {
+          location.hash = ''
+          location.hash = hash
+          return true
+        }
+        return false
+          
       }
     }
   }
@@ -73,9 +96,10 @@
   }
 
   .__faq-ul .__faq-answer {
-    padding-left: 2rem;
+    padding: 0 2rem;
     margin-bottom: 1rem;
     margin-top: 1rem;
+    font-size: 16px;
   }
   .__xs .__faq-ul .__faq-answer {
     padding-left: 1rem;

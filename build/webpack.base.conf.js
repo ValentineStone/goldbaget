@@ -4,7 +4,7 @@ const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
 
-function resolve (dir) {
+function resolve(dir) {
   return path.join(__dirname, '..', dir)
 }
 
@@ -40,12 +40,27 @@ module.exports = {
         loader: 'babel-loader',
         include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
       },
-      {
+      /*{
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
         loader: 'url-loader',
         options: {
           limit: 10000,
           name: utils.assetsPath('img/[name].[hash:7].[ext]')
+        }
+      },*/
+      {
+        test: /\.(gif|jpe?g|png|svg|tiff)(\?.*)?$/i,
+        loader: 'sharp-loader',
+        query: {
+          name: '[name].[hash:8].[ext]',
+          presets: {
+            /*thumbnail: {
+              format: ['jpeg'],
+              density: [1, 2, 3],
+              size: 800,
+              quality: 60
+            }*/
+          }
         }
       },
       {

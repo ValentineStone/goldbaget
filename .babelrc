@@ -17,6 +17,9 @@
       },
       "@/components": {
         "transform": "@/components/${member}"
+      },
+      ".": {
+        "transform": "./${member}"
       }
     }],
     "transform-runtime"

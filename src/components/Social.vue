@@ -27,7 +27,6 @@
   }
 
   .__social-img {
-    filter: invert(1);
     width: 4rem;
     height: 4rem;
   }

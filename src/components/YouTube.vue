@@ -1,37 +1,37 @@
 <template>
-  <div :style="`
-    position: relative;
+  <div class="legacy-center-parent" :style="`
     overflow: none;
     display: inline-block;
     width: ${widthComputed}px;
     height: ${heightComputed}px;
   `">
-    <div style="
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: absolute;
-      height: 100%;
-      width: 100%;
-    ">
+    <div
+      v-if="loaded"
+      class="legacy-center-parent"
+      style="
+        height: 100%;
+        width: 100%;
+      "
+    >
       <v-progress-circular indeterminate :size="50"/>
     </div>
-    <img
+    <div
       ref="cover"
-      v-if="cover"
-      :src="cover"
+      v-if="cover && coverVisible"
       @click="onClickCover"
-      :style="`
-        width: ${widthComputed+2}px;
-        height: ${heightComputed+2}px;
-        position: absolute;
-        top: -1px;
-        left: -1px;
-      `"
+      class="legacy-center-parent"
     >
+      <img
+        :src="coverComputed"
+        :style="`
+          width: ${widthComputed+2}px;
+          height: ${heightComputed+2}px;
+        `"
+      >
+      <img src="/static/img/youtube-button.svg" style="width: 90px;">
+    </div>
     <iframe
       v-if="loaded"
-      style="position: absolute;"
       ref="videoiframe"
       :width="widthComputed"
       :height="heightComputed"
@@ -49,7 +49,7 @@
   export default {
     props: {
       v: { default: undefined },
-      cover: { default: null },
+      cover: { default: true },
       width: { default: null },
       height: { default: 315 },
       ratio: { default: 16 / 9 },
@@ -62,7 +62,15 @@
     },
     data() {
       return {
-        loaded: this.preload
+        loaded: this.preload,
+        coverVisible: !!this.cover,
+        playQueued: false
+      }
+    },
+    updated() {
+      if (this.playQueued) {
+        this.playQueued = false
+        setTimeout(() => this.play(), 1000)
       }
     },
     computed: {
@@ -88,6 +96,9 @@
           return this.width / this.ratio
         else
           return this.height
+      },
+      coverComputed() {
+        return this.cover !== true ? this.cover : `https://img.youtube.com/vi/${this.v}/${'maxres'}default.jpg`
       }
     },
     methods: {
@@ -95,8 +106,8 @@
         if (!this.loaded) {
           this.loaded = true
         }
-        this.$refs.cover.style.display = 'none'
-        this.play()
+        this.coverVisible = false
+        this.playQueued = true
       },
       pause() {
         this.$refs.videoiframe.contentWindow.postMessage(
