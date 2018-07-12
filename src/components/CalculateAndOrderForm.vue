@@ -25,7 +25,7 @@
         </v-radio-group>
 
         <div class="text-xs-center">
-          Предварительная стоимость
+          Предварительная стоимость оформления вышивки
           <h1 v-text="form.pricePreview ? form.pricePreview + ' руб' : '...'" />
         </div>
 

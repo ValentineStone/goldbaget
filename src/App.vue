@@ -21,10 +21,11 @@
             position: absolute;
             right: .5em;
             text-align: right;
+            line-height: 1em;
           "
         >
-          г. Магнитогорск, ул. Ленинградская 33<br>
-          +7 (3519) 49-58-52, 8800 350-4382
+          <small>г. Магнитогорск, ул. Ленинградская 33</small><br>
+          <strong style="font-size: 1.5em; line-height: 1.2em;">+7 (3519) 49-58-52</strong>
         </div>
         <a
           :style="`
@@ -213,8 +214,7 @@
       magbaget@gmail.com
     </div>
     
-    <section v-section="960" ref="mapsSection" style="margin-top: 2rem; position: relative; min-height: 320px;" class="legacy-center-parent">
-      <v-progress-circular indeterminate :size="50"/>
+    <section v-section="960" ref="mapsSection" style="margin-top: 2rem; position: relative; height: 320px; overflow: hidden;" class="legacy-center-parent maps-section">
     </section>
 
     <section v-section="960" style="margin: 2rem 0; text-align: center;">
@@ -445,6 +445,15 @@
     width: 33% !important;
     max-width: 160px !important;
     display: inline-block !important;
+  }
+
+
+
+  .maps-section {
+    background: url(/static/img/map-static.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
 
 </style>
